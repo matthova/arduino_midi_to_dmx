@@ -2,12 +2,10 @@
 #include <DmxSimple.h>
 #include <MIDI.h>
 
-
 const uint16_t dmx_channels = 64;  // how many channels?
 uint16_t current[dmx_channels];  // value for current dim level
 uint16_t dest[dmx_channels];     // value for destination to ramp current level towards
 uint16_t increment[dmx_channels];// value for speed of ramping of current dim level towards destination
-// high=(input>>8) & 0xff
 byte commandByte;
 byte noteByte;
 byte velocityByte;
@@ -17,14 +15,11 @@ void setup() {
   for(byte i = 0; i < dmx_channels; i++){
     current[i] = 0;
     dest[i] = 0;
-    increment[i] = 1;
+    increment[i] = 10;
   }
-  DmxSimple.usePin(3);
 
-  MIDI.setHandleNoteOn(HandleNoteOn); 
-  MIDI.setHandleNoteOff(HandleNoteOff);
-  //MIDI.setHandleControlChange(HandleCC);
-  MIDI.begin();
+  //DmxSimple.maxChannel(dmx_achannels);
+  DmxSimple.usePin(3);
 
   cli();//stop interrupts
 
@@ -49,23 +44,34 @@ void setup() {
   OCR2A = 255;// = (16*10^6) / (7812.5*8) - 1 (must be <256)
   // turn on CTC mode
   TCCR2A |= (1 << WGM21);
-  // Set CS11 bit for 8 prescaler
-  TCCR2B |= (1 << CS11);   
+  // Set CS22 bit for 64 prescaler
+  TCCR2B |= (1 << CS22);   
   // enable timer compare interrupt
   TIMSK2 |= (1 << OCIE2A);
   
   sei();//allow interrupts
+
+  MIDI.setHandleNoteOn(HandleNoteOn); 
+  MIDI.setHandleNoteOff(HandleNoteOff);
+  MIDI.begin(MIDI_CHANNEL_OMNI);    
+
 }
 
 void loop() {
   for(byte i = 0; i < dmx_channels; i++){
-    DmxSimple.write(i+1, ((dest[i])>>8) & 0xff);
+    DmxSimple.write(i+1, ((current[i])>>8) & 0xff);
+    // DmxSimple.write(i+1, dest[i]);
+    // DmxSimple.write(i+1, 255);
   }
 }
 
 void HandleNoteOn(byte channel, byte pitch, byte velocity) { 
-  if(pitch < dmx_channels){
-    dest[pitch] = velocity << 8;
+  if (velocity == 0){
+    HandleNoteOff(channel, pitch, velocity);
+  }else{
+    if(pitch < dmx_channels){
+      dest[pitch] = velocity << 8;
+    }
   }
 }
 
@@ -74,9 +80,6 @@ void HandleNoteOff(byte channel, byte pitch, byte velocity) {
     dest[pitch] = 0;
   }
 }
-//void HandleCC(byte channel, byte pitch, byte velocity) {
-//
-// }
 
 ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz 
   for(byte i = 0; i < dmx_channels; i++){
@@ -99,12 +102,5 @@ ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz
 }
 
 ISR(TIMER2_COMPA_vect) {//checks for incoming midi every 128us
-  do{
-    if (Serial.available()){
-      commandByte = Serial.read();//read first byte
-      noteByte = Serial.read();//read next byte
-      velocityByte = Serial.read();//read final byte
-    }
-  }
-  while (Serial.available() > 2);//when at least three bytes available
+  MIDI.read();
 }
