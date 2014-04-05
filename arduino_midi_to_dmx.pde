@@ -15,7 +15,7 @@ void setup() {
   for(byte i = 0; i < dmx_channels; i++){
     current[i] = 0;
     dest[i] = 0;
-    increment[i] = 10;
+    increment[i] = 300;
   }
 
   //DmxSimple.maxChannel(dmx_achannels);
@@ -70,7 +70,7 @@ void HandleNoteOn(byte channel, byte pitch, byte velocity) {
     HandleNoteOff(channel, pitch, velocity);
   }else{
     if(pitch < dmx_channels){
-      dest[pitch] = velocity << 8;
+      dest[pitch] = (velocity * 2) << 8;
     }
   }
 }
@@ -102,5 +102,10 @@ ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz
 }
 
 ISR(TIMER2_COMPA_vect) {//checks for incoming midi every 128us
-  MIDI.read();
+  do{
+    if (Serial.available()){
+      MIDI.read();
+    }
+  }
+  while (Serial.available() > 2);//when at least three bytes available
 }
