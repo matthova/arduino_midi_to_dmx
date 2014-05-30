@@ -15,7 +15,7 @@ void setup() {
   for(byte i = 0; i < dmx_channels; i++){
     current[i] = 0;
     dest[i] = 0;
-    increment[i] = 300;
+    increment[i] = 100;
   }
 
   //DmxSimple.maxChannel(dmx_achannels);
@@ -59,7 +59,7 @@ void setup() {
 
 void loop() {
   for(byte i = 0; i < dmx_channels; i++){
-    DmxSimple.write(i+1, ((current[i])>>8) & 0xff);
+    DmxSimple.write(i, ((current[i])>>8) & 0xff);
     // DmxSimple.write(i+1, dest[i]);
     // DmxSimple.write(i+1, 255);
   }
@@ -70,7 +70,7 @@ void HandleNoteOn(byte channel, byte pitch, byte velocity) {
     HandleNoteOff(channel, pitch, velocity);
   }else{
     if(pitch < dmx_channels){
-      dest[pitch] = (velocity * 2) << 8;
+      dest[pitch] = velocity << 9;
     }
   }
 }
