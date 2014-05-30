@@ -9,6 +9,17 @@ uint16_t increment[dmx_channels];// value for speed of ramping of current dim le
 byte commandByte;
 byte noteByte;
 byte velocityByte;
+
+uint16_t pad_1 = 400;
+uint16_t note_e_low = 500;
+uint16_t note_f = 9;
+uint16_t note_a = 13;
+uint16_t note_c = 17;
+uint16_t note_e_high = 21;
+uint16_t pad_2 = 25;
+uint16_t drum = 29;
+uint16_t violin = 33;
+
     
 void setup() {
 
@@ -18,7 +29,7 @@ void setup() {
     increment[i] = 100;
   }
 
-  //DmxSimple.maxChannel(dmx_achannels);
+  DmxSimple.maxChannel(512);
   DmxSimple.usePin(3);
 
   cli();//stop interrupts
@@ -58,11 +69,35 @@ void setup() {
 }
 
 void loop() {
-  for(byte i = 0; i < dmx_channels; i++){
-    DmxSimple.write(i, ((current[i])>>8) & 0xff);
-    // DmxSimple.write(i+1, dest[i]);
-    // DmxSimple.write(i+1, 255);
+  writeLights();
+}
+
+void writeLights(){
+  for(uint16_t i = 0; i < dmx_channels; i++){
+    if((i >= 1) && (i <= 3)){
+      writeLight(pad_1, 1, i);
+    }else if((i >= 5) && (i <= 7)){
+      writeLight(note_e_low, 5, i);
+    }else if((i >= 9) && (i <= 11)){
+      writeLight(note_f, 9, i);
+    }else if((i >= 13) && (i <= 15)){
+      writeLight(note_a, 13, i);
+    }else if((i >= 17) && (i <= 19)){
+      writeLight(note_c, 17, i);
+    }else if((i >= 21) && (i <= 23)){
+      writeLight(note_e_high, 21, i);
+    }else if((i >= 25) && (i <= 27)){
+      writeLight(pad_2, 25, i);
+    }else if(i == 32){
+      writeLight(drum, 29, i);
+    }else if((i >= 33) && (i <= 35)){
+      writeLight(violin, 33, i);
+    }
   }
+}
+
+void writeLight(uint16_t startChannel, uint16_t offset, uint16_t i){
+  DmxSimple.write(startChannel + i - offset, ((current[i])>>8) & 0xff);
 }
 
 void HandleNoteOn(byte channel, byte pitch, byte velocity) { 
@@ -81,7 +116,7 @@ void HandleNoteOff(byte channel, byte pitch, byte velocity) {
   }
 }
 
-ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz 
+ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz smoothly fades dmx
   for(byte i = 0; i < dmx_channels; i++){
     if(current[i] != dest[i]){
       if(current[i] < dest[i]){
