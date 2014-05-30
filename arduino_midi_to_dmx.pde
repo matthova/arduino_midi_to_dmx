@@ -2,13 +2,13 @@
 #include <DmxSimple.h>
 #include <MIDI.h>
 
-const uint16_t dmx_channels = 64;  // how many channels?
-uint16_t current[dmx_channels];  // value for current dim level
-uint16_t dest[dmx_channels];     // value for destination to ramp current level towards
-uint16_t increment[dmx_channels];// value for speed of ramping of current dim level towards destination
-byte commandByte;
-byte noteByte;
-byte velocityByte;
+// const uint16_t dmx_channels = 64;  // how many channels?
+// uint16_t current[dmx_channels];  // value for current dim level
+// uint16_t dest[dmx_channels];     // value for destination to ramp current level towards
+// uint16_t increment[dmx_channels];// value for speed of ramping of current dim level towards destination
+// byte commandByte;
+// byte noteByte;
+// byte velocityByte;
     
 void setup() {
 
