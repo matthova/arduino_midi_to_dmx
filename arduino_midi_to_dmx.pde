@@ -73,14 +73,14 @@ void setup() {
 }
 
 void light_controller_1(){
-  pad_1_a = 400;
+  pad_1_a = 1;
   pad_1_b = 0;
   pad_1_c = 0;
   pad_1_d = 0;
   pad_1_e = 0;
   pad_1_f = 0;
 
-  note_e_low_a = 500;
+  note_e_low_a = 5;
   note_e_low_b = 0;
   note_e_low_c = 0;
   note_e_low_d = 0;
