@@ -11,21 +11,12 @@ byte noteByte;
 byte velocityByte;
 
 uint16_t 
-  pad_1_a, pad_1_b, pad_1_c, pad_1_d, pad_1_e, pad_1_f, 
-  note_e_low_a, note_e_low_b, note_e_low_c, note_e_low_d, note_e_low_e, note_e_low_f,
-  note_f_a, note_f_b, note_f_c, note_f_d, note_f_e, note_f_f, 
-  note_a_a, note_a_b, note_a_c, note_a_d, note_a_e, note_a_f,
-  note_c_a, note_c_b, note_c_c, note_c_d, note_c_e, note_c_f, 
-  note_e_high_a, note_e_high_b, note_e_high_c, note_e_high_d, note_e_high_e, note_e_high_f,
-  pad_2_a, pad_2_b, pad_2_c, pad_2_d, pad_2_e, pad_2_f,
-  drum_a, drum_b, drum_c, drum_d, drum_e, drum_f,
-  violin_a, violin_b, violin_c, violin_d, violin_e, violin_f;
+  violin_1, violin_2, violin_3, violin_4, violin_5, violin_6, violin_7, violin_8, violin_9;
 
     
 void setup() {
 
   light_controller_1();
-  //light_controller_2();
 
   for(byte i = 0; i < dmx_channels; i++){
     current[i] = 0;
@@ -73,133 +64,15 @@ void setup() {
 }
 
 void light_controller_1(){
-  pad_1_a = 1;
-  pad_1_b = 0;
-  pad_1_c = 0;
-  pad_1_d = 0;
-  pad_1_e = 0;
-  pad_1_f = 0;
-
-  note_e_low_a = 5;
-  note_e_low_b = 0;
-  note_e_low_c = 0;
-  note_e_low_d = 0;
-  note_e_low_e = 0;
-  note_e_low_f = 0;
-
-  note_f_a = 9;
-  note_f_b = 0;
-  note_f_c = 0;
-  note_f_d = 0;
-  note_f_e = 0;
-  note_f_f = 0;
-
-  note_a_a = 13;
-  note_a_b = 0;
-  note_a_c = 0;
-  note_a_d = 0;
-  note_a_e = 0;
-  note_a_f = 0;
-  
-  note_c_a = 17;
-  note_c_b = 0;
-  note_c_c = 0;
-  note_c_d = 0;
-  note_c_e = 0;
-  note_c_f = 0;
-
-  note_e_high_a = 21;
-  note_e_high_b = 0;
-  note_e_high_c = 0;
-  note_e_high_d = 0;
-  note_e_high_e = 0;
-  note_e_high_f = 0;
-  
-  pad_2_a = 25;
-  pad_2_b = 0;
-  pad_2_c = 0;
-  pad_2_d = 0;
-  pad_2_e = 0;
-  pad_2_f = 0;
-  
-  drum_a = 29;
-  drum_b = 0;
-  drum_c = 0;
-  drum_d = 0;
-  drum_e = 0;
-  drum_f = 0;
-  
-  violin_a = 33;
-  violin_b = 0;
-  violin_c = 0;
-  violin_d = 0;
-  violin_e = 0;
-  violin_f = 0;
-}
-
-void light_controller_2(){
-  pad_1_a = 400;
-  pad_1_b = 0;
-  pad_1_c = 0;
-  pad_1_d = 0;
-  pad_1_e = 0;
-  pad_1_f = 0;
-  
-  note_e_low_a = 500;
-  note_e_low_b = 0;
-  note_e_low_c = 0;
-  note_e_low_d = 0;
-  note_e_low_e = 0;
-  note_e_low_f = 0;
-  
-  note_f_a = 9;
-  note_f_b = 0;
-  note_f_c = 0;
-  note_f_d = 0;
-  note_f_e = 0;
-  note_f_f = 0;
-  
-  note_a_a = 13;
-  note_a_b = 0;
-  note_a_c = 0;
-  note_a_d = 0;
-  note_a_e = 0;
-  note_a_f = 0;
-  
-  note_c_a = 17;
-  note_c_b = 0;
-  note_c_c = 0;
-  note_c_d = 0;
-  note_c_e = 0;
-  note_c_f = 0;
-  
-  note_e_high_a = 21;
-  note_e_high_b = 0;
-  note_e_high_c = 0;
-  note_e_high_d = 0;
-  note_e_high_e = 0;
-  note_e_high_f = 0;
-  
-  pad_2_a = 25;
-  pad_2_b = 0;
-  pad_2_c = 0;
-  pad_2_d = 0;
-  pad_2_e = 0;
-  pad_2_f = 0;
-  
-  drum_a = 100;
-  drum_b = 0;
-  drum_c = 0;
-  drum_d = 0;
-  drum_e = 0;
-  drum_f = 0;
-  
-  violin_a = 33;
-  violin_b = 0;
-  violin_c = 0;
-  violin_d = 0;
-  violin_e = 0;
-  violin_f = 0;
+  violin_1 = 1;
+  violin_2 = 5;
+  violin_3 = 9;
+  violin_4 = 13;
+  violin_5 = 17;
+  violin_6 = 21;
+  violin_7 = 25;
+  violin_8 = 29;
+  violin_9 = 33;
 }
 
 void loop() {
@@ -208,64 +81,16 @@ void loop() {
 
 void writeLights(){
   for(uint16_t i = 0; i < dmx_channels; i++){
-    if((i >= 1) && (i <= 3)){
-      writeLight(pad_1_a, 1, i);
-      writeLight(pad_1_b, 1, i);
-      writeLight(pad_1_c, 1, i);
-      writeLight(pad_1_d, 1, i);
-      writeLight(pad_1_e, 1, i);
-      writeLight(pad_1_f, 1, i);
-    }else if((i >= 5) && (i <= 7)){
-      writeLight(note_e_low_a, 5, i);
-      writeLight(note_e_low_b, 5, i);
-      writeLight(note_e_low_c, 5, i);
-      writeLight(note_e_low_d, 5, i);
-      writeLight(note_e_low_e, 5, i);
-      writeLight(note_e_low_f, 5, i);
-    }else if((i >= 9) && (i <= 11)){
-      writeLight(note_f_a, 9, i);
-      writeLight(note_f_b, 9, i);
-      writeLight(note_f_c, 9, i);
-      writeLight(note_f_d, 9, i);
-      writeLight(note_f_e, 9, i);
-      writeLight(note_f_f, 9, i);
-    }else if((i >= 13) && (i <= 15)){
-      writeLight(note_a_a, 13, i);
-      writeLight(note_a_b, 13, i);
-      writeLight(note_a_c, 13, i);
-      writeLight(note_a_d, 13, i);
-      writeLight(note_a_e, 13, i);
-      writeLight(note_a_f, 13, i);
-    }else if((i >= 17) && (i <= 19)){
-      writeLight(note_c_a, 17, i);
-      writeLight(note_c_b, 17, i);
-      writeLight(note_c_c, 17, i);
-      writeLight(note_c_d, 17, i);
-      writeLight(note_c_e, 17, i);
-      writeLight(note_c_f, 17, i);
-    }else if((i >= 21) && (i <= 23)){
-      writeLight(note_e_high_a, 21, i);
-      writeLight(note_e_high_b, 21, i);
-      writeLight(note_e_high_c, 21, i);
-      writeLight(note_e_high_d, 21, i);
-      writeLight(note_e_high_e, 21, i);
-      writeLight(note_e_high_f, 21, i);
-    }else if((i >= 25) && (i <= 27)){
-      writeLight(pad_2_a, 25, i);
-    }else if(i == 32){
-      writeLight(drum_a, 29, i);
-      writeLight(drum_b, 29, i);
-      writeLight(drum_c, 29, i);
-      writeLight(drum_d, 29, i);
-      writeLight(drum_e, 29, i);
-      writeLight(drum_f, 29, i);
-    }else if((i >= 33) && (i <= 35)){
-      writeLight(violin_a, 33, i);
-      writeLight(violin_b, 33, i);
-      writeLight(violin_c, 33, i);
-      writeLight(violin_d, 33, i);
-      writeLight(violin_e, 33, i);
-      writeLight(violin_f, 33, i);
+    if((i >= 33) && (i <= 35)){
+      writeLight(violin_1, 33, i);
+      writeLight(violin_2, 33, i);
+      writeLight(violin_3, 33, i);
+      writeLight(violin_4, 33, i);
+      writeLight(violin_5, 33, i);
+      writeLight(violin_6, 33, i);
+      writeLight(violin_7, 33, i);
+      writeLight(violin_8, 33, i);
+      writeLight(violin_9, 33, i);
     }
   }
 }
