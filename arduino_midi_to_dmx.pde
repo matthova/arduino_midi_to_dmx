@@ -5,6 +5,7 @@
 const byte dmx_channels = 64;  // how many channels?
 byte dest[dmx_channels];     // value for destination to ramp current level towards
 byte multiplier[dmx_channels];
+byte master_fader = 0xfe;
 
 void setup() {
 	for(byte i = 0; i < dmx_channels; i++){
@@ -44,9 +45,11 @@ void loop() {
 
 void writeLights(){
 	uint16_t result;
+	uint16_t another;
 	for(byte i = 0; i < dmx_channels; i++){
-		result = dest[i] * multiplier[i];
-		DmxSimple.write(i + 1, result >> 8 & 0xff);
+		result = ((dest[i] * multiplier[i]) >> 8) & 0xff;
+		another = ((result * master_fader) >> 8) & 0xff;
+		DmxSimple.write(i + 1, another);
 	}
 }
 
@@ -64,7 +67,10 @@ void HandleNoteOff(byte channel, byte pitch, byte velocity) {
 
 void HandleControlChange(byte channel, byte number, byte value){
 	byte cc_start_channel = 64;
-	if((number >= cc_start_channel) && (number < cc_start_channel + dmx_channels)){
+	if(number == 11){
+		master_fader = value << 1; // kick 7 bit value to 8 bits
+	}
+	else if((number >= cc_start_channel) && (number < cc_start_channel + dmx_channels)){
 		multiplier[number - cc_start_channel] = value << 1;
 	}
 }
