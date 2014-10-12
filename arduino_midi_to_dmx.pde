@@ -2,7 +2,7 @@
 #include <DmxSimple.h>
 #include <MIDI.h>
 
-const uint16_t dmx_channels = 24;  // how many channels?
+const uint16_t dmx_channels = 20;  // how many channels?
 uint16_t current[dmx_channels];  // value for current dim level
 uint16_t dest[dmx_channels];     // value for destination to ramp current level towards
 uint16_t increment[dmx_channels];// value for speed of ramping of current dim level towards destination
@@ -14,7 +14,7 @@ void setup() {
 	for(uint16_t i = 0; i < dmx_channels; i++){
 		current[i] = 0;
 		dest[i] = 0;
-		increment[i] = 400;
+		increment[i] = 100;
 	}
 
 	DmxSimple.maxChannel(512);
@@ -60,20 +60,16 @@ void loop() {
 }
 
 void writeLights(){
-	for(uint16_t i = 1; i < dmx_channels + 1; i++){
-		DmxSimple.write(i, ((current[i])>>8) & 0xff);
+	for(uint16_t i = 0; i < dmx_channels; i++){
+		DmxSimple.write(i + 1, ((current[i])>>8) & 0xff);
 	}
 }
 
 void HandleNoteOn(byte channel, byte pitch, byte velocity) {
 	uint16_t vel_u16 = velocity; 
-	//if (velocity == 0){
-	//	HandleNoteOff(channel, pitch, velocity);
-	//}else{
 	if(pitch < dmx_channels){
 		dest[pitch] = vel_u16 << 9;
 	}
-	//}
 }
 
 void HandleNoteOff(byte channel, byte pitch, byte velocity) {
