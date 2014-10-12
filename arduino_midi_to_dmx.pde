@@ -2,38 +2,20 @@
 #include <DmxSimple.h>
 #include <MIDI.h>
 
-const uint16_t dmx_channels = 24;  // how many channels?
-uint16_t current[dmx_channels];  // value for current dim level
-uint16_t dest[dmx_channels];     // value for destination to ramp current level towards
-uint16_t increment[dmx_channels];// value for speed of ramping of current dim level towards destination
-byte commandByte;
-byte noteByte;
-byte velocityByte;
+const byte dmx_channels = 64;  // how many channels?
+byte dest[dmx_channels];     // value for destination to ramp current level towards
+byte multiplier[dmx_channels];
 
 void setup() {
-	for(uint16_t i = 0; i < dmx_channels; i++){
-		current[i] = 0;
+	for(byte i = 0; i < dmx_channels; i++){
 		dest[i] = 0;
-		increment[i] = 400;
+		multiplier[i] = 0xfe;
 	}
 
-	DmxSimple.maxChannel(512);
+	DmxSimple.maxChannel(dmx_channels);
 	DmxSimple.usePin(3);
 
 	cli();//stop interrupts
-
-	//set timer0 interrupt at 2kHz
-	TCCR0A = 0;// set entire TCCR0A register to 0
-	TCCR0B = 0;// same for TCCR0B
-	TCNT0  = 0;//initialize counter value to 0
-	// set compare match register for 2khz increments
-	OCR0A = 124;// = (16*10^6) / (2000*64) - 1 (must be <256)
-	// turn on CTC mode
-	TCCR0A |= (1 << WGM01);
-	// Set CS01 and CS00 bits for 64 prescaler
-	TCCR0B |= (1 << CS01) | (1 << CS00);   
-	// enable timer compare interrupt
-	TIMSK0 |= (1 << OCIE0A);
 
 	//set timer2 interrupt every 128us
 	TCCR2A = 0;// set entire TCCR2A register to 0
@@ -52,6 +34,7 @@ void setup() {
 
 	MIDI.setHandleNoteOn(HandleNoteOn); 
 	MIDI.setHandleNoteOff(HandleNoteOff);
+	MIDI.setHandleControlChange(HandleControlChange);
 	MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
@@ -60,20 +43,17 @@ void loop() {
 }
 
 void writeLights(){
-	for(uint16_t i = 1; i < dmx_channels + 1; i++){
-		DmxSimple.write(i, ((current[i])>>8) & 0xff);
+	uint16_t result;
+	for(byte i = 0; i < dmx_channels; i++){
+		result = dest[i] * multiplier[i];
+		DmxSimple.write(i + 1, result >> 8 & 0xff);
 	}
 }
 
 void HandleNoteOn(byte channel, byte pitch, byte velocity) {
-	uint16_t vel_u16 = velocity; 
-	//if (velocity == 0){
-	//	HandleNoteOff(channel, pitch, velocity);
-	//}else{
 	if(pitch < dmx_channels){
-		dest[pitch] = vel_u16 << 9;
+		dest[pitch] = velocity << 1; // kick 7 bit value to 8 bits
 	}
-	//}
 }
 
 void HandleNoteOff(byte channel, byte pitch, byte velocity) {
@@ -82,23 +62,10 @@ void HandleNoteOff(byte channel, byte pitch, byte velocity) {
 	}
 }
 
-ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz smoothly fades dmx
-	for(uint16_t i = 0; i < dmx_channels; i++){
-		if(current[i] != dest[i]){
-			if(current[i] < dest[i]){
-				if(0xffff - increment[i] < current[i]){
-					current[i] = 0xffff;
-				}else{
-					current[i] += increment[i];
-				}
-			}else{
-				if(current[i] < increment[i]){
-					current[i] = dest[i];
-				}else{
-					current[i] -= increment[i];
-				}
-			}
-		}
+void HandleControlChange(byte channel, byte number, byte value){
+	byte cc_start_channel = 64;
+	if((number >= cc_start_channel) && (number < cc_start_channel + dmx_channels)){
+		multiplier[number - cc_start_channel] = value << 1;
 	}
 }
 
