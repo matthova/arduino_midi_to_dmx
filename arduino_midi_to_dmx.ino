@@ -1,6 +1,7 @@
 
 #include <DmxSimple.h>
 #include <MIDI.h>
+MIDI_CREATE_DEFAULT_INSTANCE();
 
 const uint16_t dmx_channels = 40;  // how many channels?
 uint16_t current[dmx_channels];  // value for current dim level
